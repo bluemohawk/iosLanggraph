@@ -12,35 +12,58 @@ struct ChatView: View {
     @State var inputText: String = ""
 
     var body: some View {
+    NavigationView {
         VStack {
-            TextField(
-                "Enter your message to LangGraph",text: $inputText
-            )
-            .padding(.horizontal, 11.0)
-            .frame(width: 300, height: 200)
-            .background(Color.blue.opacity(0.2))
-            .cornerRadius(30)
-
-
-
-            Button(action: {
-                Task {
-                    await viewModel.askLLM(question: inputText)
+            ScrollView {
+                if viewModel.displayChatResponse.isEmpty {
+                    Text("Ask me something...")
+                        .foregroundColor(.gray)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    Text(viewModel.displayChatResponse)
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .transition(.opacity)
                 }
-            }, label: {
-                Text("Ask LangGraph")
-            })
+            }
+            .background(Color(UIColor.systemGray6))
+            .cornerRadius(10)
+            .padding()
 
-            TextEditor(text: $viewModel.displayChatResponse)
-                .frame(width: 300, height: 200)
-                .scrollContentBackground(.hidden)
-                .background(Color.pink.opacity(0.2))
-                .allowsHitTesting(false)
-                .font(.body)
-                .border(Color.blue, width: 2)
-                .cornerRadius(30)
-                .lineSpacing(CGFloat(10))
+            HStack {
+                ZStack(alignment: .topLeading) {
+                    TextEditor(text: $inputText)
+                        .frame(height: 100)
+                        .cornerRadius(10)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color(UIColor.systemGray4), lineWidth: 1)
+                        )
+                    if inputText.isEmpty {
+                        Text("Enter your message...")
+                            .foregroundColor(.gray)
+                            .padding(.top, 8)
+                            .padding(.leading, 5)
+                    }
+                }
+
+                Button(action: {
+                    Task {
+                        await viewModel.askLLM(question: inputText)
+                    }
+                }) {
+                    Image(systemName: "paperplane.fill")
+                        .font(.title)
+                        .foregroundColor(.white)
+                        .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
+                        .background(Color.accentColor)
+                        .cornerRadius(10)
+                }
+                .padding(.leading)
+                }
+            .padding()
         }
+        .navigationTitle("LangGraph Chat")
         .alert(isPresented: .constant(viewModel.errorMessage != nil), content: {
             Alert(
                 title: Text("Error"),
@@ -49,8 +72,8 @@ struct ChatView: View {
                     viewModel.errorMessage = nil
                 }
             )
-        })
-
+            })
+        }
     }
 }
 #Preview {
