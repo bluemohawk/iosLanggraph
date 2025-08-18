@@ -1,6 +1,6 @@
 //
-//  SoundOnApp.swift
-//  SoundOn
+//  Main.swift
+//  LangGraphAITest
 //
 //  Created by Francois Everhard Air on 4/29/25.
 //
@@ -19,14 +19,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
 
 @main
-struct SoundOnApp: App {
+struct LangGraphAITestApp: App {
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     
     var body: some Scene {
         WindowGroup {
-            View_Template()
+            ChatView()
             
         }
     }
