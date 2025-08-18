@@ -16,7 +16,7 @@ struct ChatView: View {
         VStack {
             ScrollView {
                 if viewModel.displayChatResponse.isEmpty {
-                    Text("Ask me something...")
+                    Text("Hello human!")
                         .foregroundColor(.gray)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
@@ -40,7 +40,7 @@ struct ChatView: View {
                                 .stroke(Color(UIColor.systemGray4), lineWidth: 1)
                         )
                     if inputText.isEmpty {
-                        Text("Enter your message...")
+                        Text("Enter your question...")
                             .foregroundColor(.gray)
                             .padding(.top, 8)
                             .padding(.leading, 5)
