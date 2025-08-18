@@ -26,8 +26,12 @@ struct ChatResponse: Codable {
 
 // MARK: - API LangGraph Service
 
+protocol LangGraphServiceProtocol {
+    func API_Post_langgraph(chatRequest: ChatRequest) async throws -> ChatResponse
+}
+
 /// A service to handle the network call to the LangGraph chat app.
-class api_langgraph {
+class api_langgraph: LangGraphServiceProtocol {
         
     
     func API_Post_langgraph(chatRequest: ChatRequest) async throws -> ChatResponse {
