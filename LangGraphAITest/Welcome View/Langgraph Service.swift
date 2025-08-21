@@ -12,10 +12,10 @@ import Foundation
 /// A Codable struct to represent the message we are sending to the API.
 /// The `text` field will hold the user's chat message.
 struct ChatRequest: Codable {
-    let message: String
+    let query: String
     
     init(message: String) {
-        self.message = message
+        self.query = message
     }
 }
 
@@ -38,7 +38,7 @@ class api_langgraph: LangGraphServiceProtocol {
         
         /// The URL for the local server endpoint.
         /// Note: `localhost` is a special name that resolves to `127.0.0.1`.
-        let urlString = "http://localhost:8000/chat"
+        let urlString = "http://127.0.0.1:8000/query"
         
         guard let url = URL(string: urlString) else {
             throw APIError.invalidURL
