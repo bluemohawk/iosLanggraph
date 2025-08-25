@@ -26,7 +26,7 @@ struct LangGraphAITestApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ChatView()
+            ContentView()
             
         }
     }
