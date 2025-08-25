@@ -1,6 +1,8 @@
 import SwiftUI
 
-struct frontView: View {
+struct WelcomeView: View {
+    @Binding var showChatView: Bool
+
     var body: some View {
         ZStack {
             // Background color using a standard Color initializer
@@ -38,7 +40,7 @@ struct frontView: View {
                 
                 // Start Chatting Button
                 Button(action: {
-                    // Action for the button goes here
+                    showChatView = true
                 }) {
                     HStack {
                         Text("Start Chatting")
@@ -64,7 +66,6 @@ struct frontView: View {
 }
 
 #Preview {
-    frontView()
-
+    WelcomeView(showChatView: .constant(false))
 }
 
