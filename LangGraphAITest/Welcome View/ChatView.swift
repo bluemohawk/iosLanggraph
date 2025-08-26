@@ -24,10 +24,12 @@ struct ChatView: View {
                 ScrollView {
                     if viewModel.displayChatResponse.isEmpty {
                         Text("Hello human!")
+                            .font(.title)
                             .foregroundColor(Color(white: 0.8))
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                     } else {
                         Text(viewModel.displayChatResponse)
+                            .font(.title)
                             .foregroundColor(.white)
                             .padding()
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -41,8 +43,10 @@ struct ChatView: View {
                 HStack {
                     ZStack(alignment: .topLeading) {
                         TextEditor(text: $inputText)
+                            .font(.title)
                             .foregroundColor(.white)
                             .frame(height: 100)
+                            .scrollContentBackground(.hidden)
                             .background(Color(red: 30/255, green: 40/255, blue: 50/255))
                             .cornerRadius(10)
                             .overlay(
@@ -51,6 +55,7 @@ struct ChatView: View {
                             )
                         if inputText.isEmpty {
                             Text("Enter your question...")
+                                .font(.title)
                                 .foregroundColor(Color(white: 0.8))
                                 .padding(.top, 8)
                                 .padding(.leading, 5)
