@@ -13,6 +13,7 @@ import Foundation
 /// The `text` field will hold the user's chat message.
 struct ChatRequest: Codable {
     let query: String
+    var session_id: String?
     
     init(message: String) {
         self.query = message
@@ -21,6 +22,7 @@ struct ChatRequest: Codable {
 
 struct ChatResponse: Codable {
     let response: String
+    let session_id: String
 }
 
 
@@ -28,11 +30,26 @@ struct ChatResponse: Codable {
 
 protocol LangGraphServiceProtocol {
     func API_Post_langgraph(chatRequest: ChatRequest) async throws -> ChatResponse
+    func startNewConversation()
 }
 
 /// A service to handle the network call to the LangGraph chat app.
 class api_langgraph: LangGraphServiceProtocol {
-        
+
+    private let sessionIDKey = "chat_session_id"
+
+    private var currentSessionID: String? {
+        get {
+            UserDefaults.standard.string(forKey: sessionIDKey)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: sessionIDKey)
+        }
+    }
+
+    func startNewConversation() {
+        self.currentSessionID = nil
+    }
     
     func API_Post_langgraph(chatRequest: ChatRequest) async throws -> ChatResponse {
         
@@ -48,9 +65,14 @@ class api_langgraph: LangGraphServiceProtocol {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
+        var requestBody = chatRequest
+        if let sessionID = self.currentSessionID {
+            requestBody.session_id = sessionID
+        }
+
         let jsonData: Data
         do {
-            jsonData = try JSONEncoder().encode(chatRequest)
+            jsonData = try JSONEncoder().encode(requestBody)
             request.httpBody = jsonData
         } catch {
             print("Error encoding JSON")
@@ -77,6 +99,7 @@ class api_langgraph: LangGraphServiceProtocol {
         do {
             let decoder = JSONDecoder()
             let chatResponse = try decoder.decode(ChatResponse.self, from: data)
+            self.currentSessionID = chatResponse.session_id
             print("Response: status=\(chatResponse.response)")
             return chatResponse
         } catch {

@@ -33,5 +33,12 @@ class ChatViewModel: ObservableObject {
         }
     }
 
+    @MainActor
+    func startNewConversation() {
+        chatLLM.startNewConversation()
+        displayChatResponse = ""
+        errorMessage = nil
+    }
+
 
 }
