@@ -16,77 +16,90 @@ struct ChatView: View {
     }
 
     var body: some View {
-        ZStack {
-            Color(red: 17/255, green: 25/255, blue: 34/255)
-                .edgesIgnoringSafeArea(.all)
+        NavigationView {
+            ZStack {
+                Color(red: 17/255, green: 25/255, blue: 34/255)
+                    .edgesIgnoringSafeArea(.all)
 
-            VStack {
-                ScrollView {
-                    if viewModel.displayChatResponse.isEmpty {
-                        Text("Hello human!")
-                            .font(.title)
-                            .foregroundColor(Color(white: 0.8))
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    } else {
-                        Text(viewModel.displayChatResponse)
-                            .font(.title)
-                            .foregroundColor(.white)
-                            .padding()
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .transition(.opacity)
-                    }
-                }
-                .background(Color(red: 30/255, green: 40/255, blue: 50/255))
-                .cornerRadius(10)
-                .padding()
-
-                HStack {
-                    ZStack(alignment: .topLeading) {
-                        TextEditor(text: $inputText)
-                            .font(.title)
-                            .foregroundColor(.white)
-                            .frame(height: 100)
-                            .scrollContentBackground(.hidden)
-                            .background(Color(red: 30/255, green: 40/255, blue: 50/255))
-                            .cornerRadius(10)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.blue, lineWidth: 1)
-                            )
-                        if inputText.isEmpty {
-                            Text("Enter your question...")
+                VStack {
+                    ScrollView {
+                        if viewModel.displayChatResponse.isEmpty {
+                            Text("Hello human!")
                                 .font(.title)
                                 .foregroundColor(Color(white: 0.8))
-                                .padding(.top, 8)
-                                .padding(.leading, 5)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        } else {
+                            Text(viewModel.displayChatResponse)
+                                .font(.title)
+                                .foregroundColor(.white)
+                                .padding()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .transition(.opacity)
                         }
                     }
+                    .background(Color(red: 30/255, green: 40/255, blue: 50/255))
+                    .cornerRadius(10)
+                    .padding()
 
-                    Button(action: {
-                        Task {
-                            await viewModel.askLLM(question: inputText)
+                    HStack {
+                        ZStack(alignment: .topLeading) {
+                            TextEditor(text: $inputText)
+                                .font(.title)
+                                .foregroundColor(.white)
+                                .frame(height: 100)
+                                .scrollContentBackground(.hidden)
+                                .background(Color(red: 30/255, green: 40/255, blue: 50/255))
+                                .cornerRadius(10)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(Color.blue, lineWidth: 1)
+                                )
+                            if inputText.isEmpty {
+                                Text("Enter your question...")
+                                    .font(.title)
+                                    .foregroundColor(Color(white: 0.8))
+                                    .padding(.top, 8)
+                                    .padding(.leading, 5)
+                            }
                         }
-                    }) {
-                        Image(systemName: "paperplane.fill")
-                            .font(.title)
-                            .foregroundColor(.white)
-                            .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
-                            .background(Color.blue)
-                            .cornerRadius(10)
+
+                        Button(action: {
+                            Task {
+                                await viewModel.askLLM(question: inputText)
+                            }
+                        }) {
+                            Image(systemName: "paperplane.fill")
+                                .font(.title)
+                                .foregroundColor(.white)
+                                .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
+                                .background(Color.blue)
+                                .cornerRadius(10)
+                        }
+                        .padding(.leading)
                     }
-                    .padding(.leading)
-                    }
-                .padding()
+                    .padding()
+                }
+                .alert(isPresented: .constant(viewModel.errorMessage != nil), content: {
+                    Alert(
+                        title: Text("Error"),
+                        message: Text(viewModel.errorMessage ?? ""),
+                        dismissButton: .default(Text("OK")) {
+                            viewModel.errorMessage = nil
+                        }
+                    )
+                })
             }
-            .alert(isPresented: .constant(viewModel.errorMessage != nil), content: {
-                Alert(
-                    title: Text("Error"),
-                    message: Text(viewModel.errorMessage ?? ""),
-                    dismissButton: .default(Text("OK")) {
-                        viewModel.errorMessage = nil
+            .navigationTitle("LangGraph Chat")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        viewModel.startNewConversation()
+                    }) {
+                        Image(systemName: "plus.message")
                     }
-                )
-            })
+                }
+            }
         }
     }
 }

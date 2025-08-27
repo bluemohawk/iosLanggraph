@@ -2,7 +2,8 @@ import XCTest
 @testable import LangGraphAITest
 
 class MockLangGraphService: LangGraphServiceProtocol {
-    var result: Result<ChatResponse, Error> = .success(ChatResponse(response: "Default success"))
+    var result: Result<ChatResponse, Error> = .success(ChatResponse(response: "Default success", session_id: "123"))
+    var startNewConversationCalled = false
 
     func API_Post_langgraph(chatRequest: ChatRequest) async throws -> ChatResponse {
         switch result {
@@ -11,6 +12,10 @@ class MockLangGraphService: LangGraphServiceProtocol {
         case .failure(let error):
             throw error
         }
+    }
+
+    func startNewConversation() {
+        startNewConversationCalled = true
     }
 }
 
@@ -34,7 +39,7 @@ class LangGraphAITestTests: XCTestCase {
     func testAskLLM_Success() async {
         // Given
         let expectedResponse = "Hello, this is a test response."
-        mockService.result = .success(ChatResponse(response: expectedResponse))
+        mockService.result = .success(ChatResponse(response: expectedResponse, session_id: "123"))
         let question = "Hi"
 
         // When
@@ -57,5 +62,18 @@ class LangGraphAITestTests: XCTestCase {
         // Then
         XCTAssertEqual(viewModel.displayChatResponse, "")
         XCTAssertEqual(viewModel.errorMessage, "Error: \(expectedError.localizedDescription)")
+    }
+
+    func testStartNewConversation() async {
+        // Given
+        viewModel.displayChatResponse = "Some previous response"
+
+        // When
+        viewModel.startNewConversation()
+
+        // Then
+        XCTAssertTrue(mockService.startNewConversationCalled)
+        XCTAssertEqual(viewModel.displayChatResponse, "")
+        XCTAssertNil(viewModel.errorMessage)
     }
 }
